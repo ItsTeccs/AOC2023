@@ -26,27 +26,29 @@ def symbol_adjacent(row, col):
     
     return False
             
+def part1(grid):
+    parsing_number = False
+    is_part_number = False
+    cur_parsing_num = ""
+    part_number_sum = 0
+    for row in range(0, len(grid)):
+        for col in range(0, len(grid[row])):
+            char_at = grid[row][col]
+            if char_at.isnumeric() and not parsing_number:
+                parsing_number = True
+            elif not char_at.isnumeric() and parsing_number:
+                if is_part_number:
+                    part_number_sum += int(cur_parsing_num)
+                is_part_number = False
+                parsing_number = False
+                cur_parsing_num = ""
+            
+            if parsing_number:
+                cur_parsing_num += char_at
+                if not is_part_number:
+                    is_part_number = symbol_adjacent(row, col)
+    print(part_number_sum)
 for line in lines:
     grid.append(list(line))
-    
-parsing_number = False
-is_part_number = False
-cur_parsing_num = ""
-part_number_sum = 0
-for row in range(0, len(grid)):
-    for col in range(0, len(grid[row])):
-        char_at = grid[row][col]
-        if char_at.isnumeric() and not parsing_number:
-            parsing_number = True
-        elif not char_at.isnumeric() and parsing_number:
-            if is_part_number:
-                part_number_sum += int(cur_parsing_num)
-            is_part_number = False
-            parsing_number = False
-            cur_parsing_num = ""
-        
-        if parsing_number:
-            cur_parsing_num += char_at
-            if not is_part_number:
-                is_part_number = symbol_adjacent(row, col)
-print(part_number_sum)
+
+part1()
