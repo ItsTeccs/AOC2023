@@ -11,6 +11,10 @@ def sort_hands(arr):
         arr[j + 1] = key
     return arr
 
+def get_card_strength(ch):
+    card_strengths = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A']
+    return card_strengths.index(ch)
+
 def compare_hands(a, b):
     type_a = get_hand_type(get_cards(a))
     type_b = get_hand_type(get_cards(b))
@@ -24,7 +28,7 @@ def compare_hands(a, b):
         "pair": 2,
         "highcard": 1
     }
-    card_strengths = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+    card_strengths = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A']
     
     # check hand types for strengths
     if hand_strengths[type_a] < hand_strengths[type_b]:
@@ -116,4 +120,72 @@ def part1(lines):
         data = hand_data_list[i]
         answer += int(data[1]) * (i + 1)
     print(answer)
+
+def calc_jokers(hand):
+    print("----")
+    print(hand)
+    cards = get_cards(hand)
+    highest = 0
+    highest_strength = 0 
+    most_frequent_card = ''
+    for key in cards.keys():
+        if cards[key] >= highest and get_card_strength(key) > highest_strength and cards[key] != 'J':
+            highest_strength = get_card_strength(key)
+            highest = cards[key]
+            most_frequent_card = key
+
+    hand = hand.replace("J", most_frequent_card)
+
+    print(hand)
+    print("----")
+    return hand
+
+def part2(lines):
+    answer = 0 
+    # store all of the hands of the different types
+    hands = {
+        "fivekind": [],
+        "fourkind": [],
+        "fullhouse": [],
+        "threekind": [],
+        "twopair": [],
+        "pair": [],
+        "highcard": [],
+    }
+
+    for line in lines:
+        hand = line.strip().split(" ")[0]
+        bet = line.strip().split(" ")[1]
+        calced_hand = calc_jokers(hand)
+        hand_data = (calced_hand, bet, get_hand_type((get_cards(calced_hand))))
+        hands[hand_data[2]].append(hand_data)
+
+    for hand_type in hands.keys():
+        hand_type_data = hands[hand_type]
+        if hand_type_data:
+            hand_type_data = sort_hands(hand_type_data)
+            hands[hand_type] = hand_type_data
+    
+    # compose hands into main list
+    hand_data_list = []
+    for hand in hands["highcard"]:
+        hand_data_list.append(hand)
+    for hand in hands["pair"]:
+        hand_data_list.append(hand)
+    for hand in hands["twopair"]:
+        hand_data_list.append(hand)
+    for hand in hands["threekind"]:
+        hand_data_list.append(hand)
+    for hand in hands["fullhouse"]:
+        hand_data_list.append(hand)
+    for hand in hands["fourkind"]:
+        hand_data_list.append(hand)
+    for hand in hands["fivekind"]:
+        hand_data_list.append(hand)
+
+    for i in range(0, len(hand_data_list)):
+        data = hand_data_list[i]
+        answer += int(data[1]) * (i + 1)
+    print(answer)
 part1(lines)
+part2(lines)
